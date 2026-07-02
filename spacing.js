@@ -381,29 +381,30 @@
 
   function updateStatus() {
     if (!selA) status.textContent = '点击第一个元素';
-    else if (!selB) status.textContent = '点击第二个元素';
-    else status.textContent = '再次点击重新开始';
+    else if (!selB) status.textContent = '已选 A · 点其他元素测距';
+    else status.textContent = '继续点击测距 · 点 A 解除';
   }
 
   function selectElement(el) {
     if (!el || el === document.documentElement || el === document.body) return;
-    // 忽略工具栏自身
     if (host.contains(el)) return;
 
     if (navigator.vibrate) { try { navigator.vibrate(30); } catch (e) {} }
 
     if (!selA) {
-      selA = { el: el, rect: rectOf(el) };
-      drawSelectionOnly();
-    } else if (!selB) {
-      if (el === selA.el) return; // 忽略同一个元素
-      selB = { el: el, rect: rectOf(el) };
-      drawSpacing(selA.rect, selB.rect);
-    } else {
-      // 第三次点击：重新开始
+      // 首次点击 → 粘性 A
       selA = { el: el, rect: rectOf(el) };
       selB = null;
       drawSelectionOnly();
+    } else if (el === selA.el) {
+      // 点击已选中的 A → 解除（回到空态）
+      selA = null;
+      selB = null;
+      clearSVG();
+    } else {
+      // 其它任何点击 → 更新 B 并显示间距（A 保持不变）
+      selB = { el: el, rect: rectOf(el) };
+      drawSpacing(selA.rect, selB.rect);
     }
     updateStatus();
   }
