@@ -18,7 +18,6 @@ const ROOT = __dirname;
 const SRC = path.join(ROOT, 'spacing.js');
 const DIST = path.join(ROOT, 'dist');
 const OUT_MIN = path.join(DIST, 'spacing.min.js');
-const OUT_BOOKMARKLET = path.join(DIST, 'bookmarklet.txt');
 const OUT_PAGE = path.join(ROOT, 'bookmarklet.html');
 
 // 默认 CDN URL —— 手动改成你自己的即可。
@@ -128,20 +127,9 @@ function build() {
     process.exit(1);
   }
 
-  // bookmarklet：URL-encode 整个 IIFE
-  const bookmarklet = 'javascript:' + encodeURIComponent(min);
-  fs.writeFileSync(OUT_BOOKMARKLET, bookmarklet, 'utf8');
-
-  // loader bookmarklet：从当前页面同源加载 spacing.js（更短、更好用）
+  // loader bookmarklet：从 CDN 拉取 spacing.js
   const loaderTemplateSrc =
     "(function(){var s=document.createElement('script');s.src=__URL__+'?t='+Date.now();document.body.appendChild(s);})();";
-
-  // 生成 bookmarklet.html
-  const escapedHref = bookmarklet
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;');
-
-  const escapedForJson = JSON.stringify(bookmarklet);
 
   const page = `<!doctype html>
 <html lang="zh-CN">
@@ -172,10 +160,10 @@ function build() {
 </head>
 <body>
   <h1>Mobile Spacing · Bookmarklet</h1>
-  <p>本工具只在手机（触屏）上生效。下面两种方案任选一种。</p>
+  <p>本工具只在手机（触屏）上生效。复制下面的 <code>javascript:</code> 链接，粘贴到手机浏览器书签 URL 即可。</p>
 
   <section style="border:2px solid #f59e0b;">
-    <h3 style="margin-top:0">⚡ 方案 A · Loader（推荐）</h3>
+    <h3 style="margin-top:0">⚡ Loader Bookmarklet</h3>
     <p>体积仅 ~180 字节，从下面的 CDN URL 动态拉取脚本，可在任意 HTTPS 网页使用。</p>
     <p>
       <label style="font-size:13px;color:#6b7280;">脚本 URL：</label><br/>
@@ -190,17 +178,6 @@ function build() {
     <p><small>💡 默认从 GitHub Pages 加载（push 后 1~2 分钟自动更新）。<br/>
       如需更全球 CDN 加速或 GH Pages 挂掉，可临时改成 jsDelivr：<br/>
       <code style="font-size:11px;">https://cdn.jsdelivr.net/gh/Ybi8bu/mobile-spacing-js@main/spacing.js</code></small></p>
-  </section>
-
-  <section>
-    <h3 style="margin-top:0">📦 方案 B · Inline（完全离线）</h3>
-    <p>把整个脚本编码进 URL，不依赖任何服务器，但字符串较长（~15 KB）。</p>
-    <textarea id="bm-text" readonly rows="6"
-      style="width:100%;font-family:monospace;font-size:12px;border-radius:8px;border:1px solid #d1d5db;padding:8px;">${escapedHref}</textarea>
-    <p>
-      <button id="copy-btn" style="padding:8px 14px;border-radius:8px;border:0;background:#111827;color:#fff;font-size:13px;">复制 Inline</button>
-      <small id="copy-tip"></small>
-    </p>
   </section>
 
   <section style="background:#fff7ed;border-color:#fcd34d;">
@@ -226,7 +203,6 @@ function build() {
   </section>
 
   <script>
-    const BM = ${escapedForJson};
     const DEFAULT_CDN_URL = ${JSON.stringify(DEFAULT_CDN_URL)};
     (function(){
       const urlInput = document.getElementById('loader-url-input');
@@ -257,9 +233,6 @@ function build() {
       document.getElementById('copy-loader').addEventListener('click', () => {
         copy(currentLoader, document.getElementById('copy-loader-tip'));
       });
-      document.getElementById('copy-btn').addEventListener('click', () => {
-        copy(BM, document.getElementById('copy-tip'));
-      });
     })();
   </script>
 </body>
@@ -267,10 +240,8 @@ function build() {
 `;
   fs.writeFileSync(OUT_PAGE, page, 'utf8');
 
-  const kb = (bookmarklet.length / 1024).toFixed(2);
   console.log('✅ 构建完成');
   console.log('   dist/spacing.min.js   ' + min.length + ' bytes');
-  console.log('   dist/bookmarklet.txt  ' + bookmarklet.length + ' bytes (' + kb + ' KB)');
   console.log('   bookmarklet.html      已生成');
 }
 
