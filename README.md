@@ -52,16 +52,21 @@ npx serve .
 
 ### 3. 使用 Bookmarklet 在手机上注入任意页面
 
-```bash
-node build.js
+本项目脚本已托管在 GitHub Pages / jsDelivr，直接用下面的 Loader（~200 字节，任意 HTTPS 网页可用）：
+
+```
+javascript:(function(){var s=document.createElement('script');s.src='https://ybi8bu.github.io/mobile-spacing-js/spacing.js?t='+Date.now();document.body.appendChild(s);})();
 ```
 
-打开生成的 `bookmarklet.html`（可通过 `python3 -m http.server 8080` 起服务，让手机访问），按页面提示复制 `javascript:` 链接并粘贴到手机书签 URL：
+或者访问 <https://ybi8bu.github.io/mobile-spacing-js/bookmarklet.html> 一键复制。
 
-- iOS Safari：先随便保存一个书签，再编辑 URL 粘贴即可。
-- Android：Chrome/Edge 会过滤 `javascript:` 前缀，推荐用 **Kiwi / Firefox** 之类允许 JS 书签的浏览器。
+在手机浏览器保存为书签：
 
-在目标网页点击书签即可注入测距工具。再点一次 = 关闭。
+- **iOS Safari**：先随便保存一个书签，编辑 URL 粘贴即可，书签菜单直接点生效。
+- **Android Chrome**：先保存书签，编辑 URL 粘贴，书签名改成 `sp` 之类；使用时不要从书签菜单点，而是**在地址栏输入 `sp`，点建议列表里的那条**（Chrome 从菜单点会剥掉 `javascript:` 前缀）。
+- **Android Kiwi / Firefox**：书签菜单可直接点。
+
+再点一次同一个书签 = 卸载。
 
 ## 交互说明
 

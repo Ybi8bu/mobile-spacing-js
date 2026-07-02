@@ -22,8 +22,10 @@ const OUT_BOOKMARKLET = path.join(DIST, 'bookmarklet.txt');
 const OUT_PAGE = path.join(ROOT, 'bookmarklet.html');
 
 // 默认 CDN URL —— 手动改成你自己的即可。
-// jsDelivr 会在你 push 到 GitHub 后几秒内生效，全球 HTTPS 可用。
-const DEFAULT_CDN_URL = 'https://cdn.jsdelivr.net/gh/Ybi8bu/mobile-spacing-js@main/spacing.js';
+// 优先用 GitHub Pages：push 后 1~2 分钟自动发布，比 jsDelivr 的缓存刷新更快。
+// 备用 jsDelivr URL:
+//   https://cdn.jsdelivr.net/gh/Ybi8bu/mobile-spacing-js@main/spacing.js
+const DEFAULT_CDN_URL = 'https://ybi8bu.github.io/mobile-spacing-js/spacing.js';
 
 function minify(src) {
   // 逐字符扫描，识别字符串 / 正则 / 注释状态，避免破坏字符串。
@@ -185,7 +187,9 @@ function build() {
       <button id="copy-loader" style="padding:8px 14px;border-radius:8px;border:0;background:#f59e0b;color:#fff;font-size:13px;">复制 Loader</button>
       <small id="copy-loader-tip"></small>
     </p>
-    <p><small>💡 默认使用 jsDelivr CDN；也可改成你自己的 HTTPS 静态地址。</small></p>
+    <p><small>💡 默认从 GitHub Pages 加载（push 后 1~2 分钟自动更新）。<br/>
+      如需更全球 CDN 加速或 GH Pages 挂掉，可临时改成 jsDelivr：<br/>
+      <code style="font-size:11px;">https://cdn.jsdelivr.net/gh/Ybi8bu/mobile-spacing-js@main/spacing.js</code></small></p>
   </section>
 
   <section>
